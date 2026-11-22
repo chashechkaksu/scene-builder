@@ -4,8 +4,6 @@ dist-ssr
 *.local
 playwright-report
 test-results
-docs/examples/*.svg
-docs/examples/*.png
 *.tsbuildinfo
 .env*
 !.env.example
