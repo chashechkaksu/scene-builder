@@ -1,0 +1,1075 @@
+{
+  "objects": [
+    {
+      "id": "book",
+      "nameRu": "Книга",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/book.svg",
+            "viewBox": [
+              0,
+              0,
+              1446,
+              977
+            ],
+            "bbox": {
+              "x": -0.59408,
+              "y": 0,
+              "width": 1447.09408,
+              "height": 987.665
+            },
+            "roles": [
+              "white",
+              "ink",
+              "obj-3",
+              "obj-2",
+              "obj-1"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/book.svg",
+            "viewBox": [
+              0,
+              0,
+              1446,
+              977
+            ],
+            "bbox": {
+              "x": -0.59408,
+              "y": 0,
+              "width": 1447.09408,
+              "height": 987.665
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/book.svg",
+            "viewBox": [
+              0,
+              0,
+              723,
+              489
+            ],
+            "bbox": {
+              "x": -0.29704,
+              "y": 0,
+              "width": 723.5450400000001,
+              "height": 493.832
+            },
+            "roles": [
+              "white",
+              "obj-1",
+              "obj-2",
+              "ink"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/book.svg",
+            "viewBox": [
+              0,
+              0,
+              723,
+              489
+            ],
+            "bbox": {
+              "x": -0.29704,
+              "y": 0,
+              "width": 723.5450400000001,
+              "height": 493.833
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "phone",
+      "nameRu": "Телефон",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/phone.svg",
+            "viewBox": [
+              0,
+              0,
+              797,
+              462
+            ],
+            "bbox": {
+              "x": -1.33115,
+              "y": -1.29274,
+              "width": 801.71915,
+              "height": 462.95974
+            },
+            "roles": [
+              "white",
+              "bg-3",
+              "ink",
+              "bg-1",
+              "obj-1"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/phone.svg",
+            "viewBox": [
+              0,
+              0,
+              797,
+              462
+            ],
+            "bbox": {
+              "x": -1.33115,
+              "y": -1.29274,
+              "width": 801.71915,
+              "height": 462.95974
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/phone.svg",
+            "viewBox": [
+              0,
+              0,
+              399,
+              231
+            ],
+            "bbox": {
+              "x": -0.665604,
+              "y": -0.646371,
+              "width": 400.859604,
+              "height": 231.480371
+            },
+            "roles": [
+              "white",
+              "bg-3",
+              "ink",
+              "bg-1",
+              "obj-1"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/phone.svg",
+            "viewBox": [
+              0,
+              0,
+              399,
+              231
+            ],
+            "bbox": {
+              "x": -0.665604,
+              "y": -0.646371,
+              "width": 400.859604,
+              "height": 231.480371
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "puzzle",
+      "nameRu": "Пазл",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/puzzle.svg",
+            "viewBox": [
+              0,
+              0,
+              545,
+              314
+            ],
+            "bbox": {
+              "x": -0.137536,
+              "y": -0.0258699,
+              "width": 544.462536,
+              "height": 314.41786989999997
+            },
+            "roles": [
+              "ink",
+              "white",
+              "obj-2",
+              "obj-1"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/puzzle.svg",
+            "viewBox": [
+              0,
+              0,
+              545,
+              314
+            ],
+            "bbox": {
+              "x": -0.137536,
+              "y": -0.0258699,
+              "width": 544.462536,
+              "height": 314.41786989999997
+            },
+            "roles": [
+              "bg-3",
+              "bg-1"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/puzzle.svg",
+            "viewBox": [
+              0,
+              0,
+              273,
+              157
+            ],
+            "bbox": {
+              "x": -0.0687678,
+              "y": -0.012935,
+              "width": 272.2317678,
+              "height": 157.208935
+            },
+            "roles": [
+              "ink",
+              "white",
+              "bg-1",
+              "obj-2",
+              "obj-1"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/puzzle.svg",
+            "viewBox": [
+              0,
+              0,
+              273,
+              157
+            ],
+            "bbox": {
+              "x": -0.0687678,
+              "y": -0.012935,
+              "width": 272.2317678,
+              "height": 157.208935
+            },
+            "roles": [
+              "bg-3",
+              "bg-1"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "coin",
+      "nameRu": "Монета",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/coin.svg",
+            "viewBox": [
+              0,
+              0,
+              287,
+              189
+            ],
+            "bbox": {
+              "x": -6.89349,
+              "y": -0.909565,
+              "width": 293.77448999999996,
+              "height": 189.410565
+            },
+            "roles": [
+              "ink",
+              "obj-1",
+              "white"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/coin.svg",
+            "viewBox": [
+              0,
+              0,
+              287,
+              189
+            ],
+            "bbox": {
+              "x": -6.89349,
+              "y": -0.908617,
+              "width": 293.77448999999996,
+              "height": 189.409617
+            },
+            "roles": [
+              "bg-3",
+              "bg-1"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/coin.svg",
+            "viewBox": [
+              0,
+              0,
+              153,
+              101
+            ],
+            "bbox": {
+              "x": -3.66471,
+              "y": -0.483195,
+              "width": 156.16271,
+              "height": 100.685195
+            },
+            "roles": [
+              "ink",
+              "obj-1",
+              "white"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/coin.svg",
+            "viewBox": [
+              0,
+              0,
+              153,
+              101
+            ],
+            "bbox": {
+              "x": -3.6644,
+              "y": -0.483208,
+              "width": 156.1634,
+              "height": 100.685208
+            },
+            "roles": [
+              "bg-3",
+              "bg-1"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "headphones",
+      "nameRu": "Наушники",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/headphones.svg",
+            "viewBox": [
+              0,
+              0,
+              889,
+              692
+            ],
+            "bbox": {
+              "x": -13.3351,
+              "y": -3.50937,
+              "width": 903.1081000000001,
+              "height": 696.04937
+            },
+            "roles": [
+              "bg-1",
+              "ink",
+              "white",
+              "obj-1"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/headphones.svg",
+            "viewBox": [
+              0,
+              0,
+              889,
+              692
+            ],
+            "bbox": {
+              "x": -13.3351,
+              "y": -3.50937,
+              "width": 903.1081000000001,
+              "height": 696.04937
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/headphones.svg",
+            "viewBox": [
+              0,
+              0,
+              445,
+              346
+            ],
+            "bbox": {
+              "x": -6.66753,
+              "y": -1.75469,
+              "width": 451.55353,
+              "height": 348.02468999999996
+            },
+            "roles": [
+              "bg-1",
+              "ink",
+              "white"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/headphones.svg",
+            "viewBox": [
+              0,
+              0,
+              445,
+              346
+            ],
+            "bbox": {
+              "x": -6.66753,
+              "y": -1.75469,
+              "width": 451.55353,
+              "height": 348.02468999999996
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "lamp",
+      "nameRu": "Лампа",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/lamp.svg",
+            "viewBox": [
+              0,
+              0,
+              946,
+              1129
+            ],
+            "bbox": {
+              "x": -0.297888,
+              "y": -0.911907,
+              "width": 946.5058879999999,
+              "height": 1131.101907
+            },
+            "roles": [
+              "obj-1",
+              "ink",
+              "white",
+              "bg-1",
+              "obj-2"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/lamp.svg",
+            "viewBox": [
+              0,
+              0,
+              946,
+              1129
+            ],
+            "bbox": {
+              "x": -0.297888,
+              "y": -0.911907,
+              "width": 946.5058879999999,
+              "height": 1131.101907
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/lamp.svg",
+            "viewBox": [
+              0,
+              0,
+              473,
+              565
+            ],
+            "bbox": {
+              "x": -0.148944,
+              "y": -0.455954,
+              "width": 473.25294399999996,
+              "height": 565.551954
+            },
+            "roles": [
+              "obj-1",
+              "ink",
+              "white",
+              "bg-1",
+              "obj-2"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/lamp.svg",
+            "viewBox": [
+              0,
+              0,
+              473,
+              565
+            ],
+            "bbox": {
+              "x": -0.148944,
+              "y": -0.455954,
+              "width": 473.25294399999996,
+              "height": 565.551954
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "tulips",
+      "nameRu": "Тюльпаны",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/tulips.svg",
+            "viewBox": [
+              0,
+              0,
+              591,
+              748
+            ],
+            "bbox": {
+              "x": -8.36343,
+              "y": -0.35139,
+              "width": 627.70243,
+              "height": 748.52939
+            },
+            "roles": [
+              "white",
+              "obj-2",
+              "ink",
+              "obj-1",
+              "bg-2"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/tulips.svg",
+            "viewBox": [
+              0,
+              0,
+              591,
+              748
+            ],
+            "bbox": {
+              "x": -8.36343,
+              "y": -0.351756,
+              "width": 627.70243,
+              "height": 748.529756
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/tulips.svg",
+            "viewBox": [
+              0,
+              0,
+              324,
+              409
+            ],
+            "bbox": {
+              "x": -4.57793,
+              "y": -0.192748,
+              "width": 343.58793,
+              "height": 409.725748
+            },
+            "roles": [
+              "white",
+              "obj-2",
+              "ink",
+              "obj-1",
+              "bg-2"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/tulips.svg",
+            "viewBox": [
+              0,
+              0,
+              324,
+              409
+            ],
+            "bbox": {
+              "x": -4.57793,
+              "y": -0.192809,
+              "width": 343.58793,
+              "height": 409.725809
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "wallet",
+      "nameRu": "Кошелёк",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/wallet.svg",
+            "viewBox": [
+              0,
+              0,
+              631,
+              397
+            ],
+            "bbox": {
+              "x": -5.3186,
+              "y": -4.67606,
+              "width": 639.9386,
+              "height": 401.17006000000003
+            },
+            "roles": [
+              "ink",
+              "bg-1",
+              "white",
+              "obj-1"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/wallet.svg",
+            "viewBox": [
+              0,
+              0,
+              631,
+              397
+            ],
+            "bbox": {
+              "x": -5.3186,
+              "y": -4.67606,
+              "width": 639.9386,
+              "height": 401.16906
+            },
+            "roles": [
+              "bg-3",
+              "bg-1"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/wallet.svg",
+            "viewBox": [
+              0,
+              0,
+              316,
+              199
+            ],
+            "bbox": {
+              "x": -2.6593,
+              "y": -2.33803,
+              "width": 319.9693,
+              "height": 200.58503000000002
+            },
+            "roles": [
+              "ink",
+              "bg-1",
+              "white",
+              "obj-1"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/wallet.svg",
+            "viewBox": [
+              0,
+              0,
+              316,
+              199
+            ],
+            "bbox": {
+              "x": -2.6593,
+              "y": -2.33803,
+              "width": 319.9693,
+              "height": 200.58503000000002
+            },
+            "roles": [
+              "bg-3",
+              "bg-1"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "folder",
+      "nameRu": "Папка",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/folder.svg",
+            "viewBox": [
+              0,
+              0,
+              1241,
+              659
+            ],
+            "bbox": {
+              "x": -1.70012,
+              "y": -2.19002,
+              "width": 1243.26012,
+              "height": 661.20602
+            },
+            "roles": [
+              "obj-1",
+              "ink",
+              "white",
+              "obj-2"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/folder.svg",
+            "viewBox": [
+              0,
+              0,
+              1241,
+              659
+            ],
+            "bbox": {
+              "x": -1.70012,
+              "y": -2.19002,
+              "width": 1243.26012,
+              "height": 661.20602
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/folder.svg",
+            "viewBox": [
+              0,
+              0,
+              621,
+              330
+            ],
+            "bbox": {
+              "x": -0.850059,
+              "y": -1.09501,
+              "width": 621.628059,
+              "height": 330.60301
+            },
+            "roles": [
+              "obj-1",
+              "ink",
+              "white"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/folder.svg",
+            "viewBox": [
+              0,
+              0,
+              621,
+              330
+            ],
+            "bbox": {
+              "x": -0.850059,
+              "y": -1.09501,
+              "width": 621.628059,
+              "height": 330.60301
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    },
+    {
+      "id": "pen",
+      "nameRu": "Ручка",
+      "sizes": {
+        "L": {
+          "main": {
+            "file": "L/main/pen.svg",
+            "viewBox": [
+              0,
+              0,
+              509,
+              286
+            ],
+            "bbox": {
+              "x": -6.03683,
+              "y": -2.324,
+              "width": 516.67283,
+              "height": 288.75100000000003
+            },
+            "roles": [
+              "white",
+              "ink",
+              "obj-1",
+              "obj-2",
+              "bg-1"
+            ]
+          },
+          "bg": {
+            "file": "L/bg/pen.svg",
+            "viewBox": [
+              0,
+              0,
+              509,
+              286
+            ],
+            "bbox": {
+              "x": -6.03683,
+              "y": -2.324,
+              "width": 516.67283,
+              "height": 288.75100000000003
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        },
+        "S": {
+          "main": {
+            "file": "S/main/pen.svg",
+            "viewBox": [
+              0,
+              0,
+              255,
+              143
+            ],
+            "bbox": {
+              "x": -3.01841,
+              "y": -1.16197,
+              "width": 258.33641,
+              "height": 144.37597
+            },
+            "roles": [
+              "white",
+              "ink",
+              "obj-2"
+            ]
+          },
+          "bg": {
+            "file": "S/bg/pen.svg",
+            "viewBox": [
+              0,
+              0,
+              255,
+              143
+            ],
+            "bbox": {
+              "x": -3.01841,
+              "y": -1.162,
+              "width": 258.33641,
+              "height": 144.376
+            },
+            "roles": [
+              "bg-1",
+              "bg-3"
+            ]
+          }
+        }
+      },
+      "meta": {
+        "keywords": []
+      }
+    }
+  ],
+  "backgrounds": [
+    {
+      "schemeId": "purple",
+      "sizes": {
+        "L": {
+          "file": "backgrounds/L/purple.svg",
+          "viewBox": [
+            0,
+            0,
+            1000,
+            1000
+          ],
+          "bbox": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 1000
+          },
+          "roles": [
+            "bg-3",
+            "bg-2",
+            "bg-1"
+          ]
+        },
+        "S": {
+          "file": "backgrounds/S/purple.svg",
+          "viewBox": [
+            0,
+            0,
+            500,
+            500
+          ],
+          "bbox": {
+            "x": 0,
+            "y": 0,
+            "width": 500,
+            "height": 500
+          },
+          "roles": [
+            "bg-3",
+            "bg-2",
+            "bg-1"
+          ]
+        }
+      }
+    },
+    {
+      "schemeId": "teal",
+      "sizes": {
+        "L": {
+          "file": "backgrounds/L/teal.svg",
+          "viewBox": [
+            0,
+            0,
+            1000,
+            1000
+          ],
+          "bbox": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 1000
+          },
+          "roles": [
+            "bg-3",
+            "bg-2",
+            "bg-1"
+          ]
+        },
+        "S": {
+          "file": "backgrounds/S/teal.svg",
+          "viewBox": [
+            0,
+            0,
+            500,
+            500
+          ],
+          "bbox": {
+            "x": 0,
+            "y": 0,
+            "width": 500,
+            "height": 500
+          },
+          "roles": [
+            "bg-3",
+            "bg-2",
+            "bg-1"
+          ]
+        }
+      }
+    },
+    {
+      "schemeId": "orange",
+      "sizes": {
+        "L": {
+          "file": "backgrounds/L/orange.svg",
+          "viewBox": [
+            0,
+            0,
+            1000,
+            1000
+          ],
+          "bbox": {
+            "x": 0,
+            "y": -88.5925,
+            "width": 1089.68,
+            "height": 1220.8425
+          },
+          "roles": [
+            "bg-3",
+            "bg-2",
+            "bg-1"
+          ]
+        },
+        "S": {
+          "file": "backgrounds/S/orange.svg",
+          "viewBox": [
+            0,
+            0,
+            500,
+            500
+          ],
+          "bbox": {
+            "x": 0,
+            "y": -44.2962,
+            "width": 544.838,
+            "height": 610.4212
+          },
+          "roles": [
+            "bg-3",
+            "bg-2",
+            "bg-1"
+          ]
+        }
+      }
+    }
+  ]
+}

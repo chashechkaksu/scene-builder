@@ -1,0 +1,6 @@
+dist
+node_modules
+src/library
+assets-src
+playwright-report
+test-results

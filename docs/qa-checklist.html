@@ -1,0 +1,774 @@
+<title>Приёмка конструктора</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  :root {
+    --bg: #faf8fc;
+    --surface: #ffffff;
+    --surface-muted: #f1edf8;
+    --border: #e2dbf2;
+    --ink: #1a1a1a;
+    --ink-muted: #6b6478;
+    --accent: #7c5cbf;
+    --accent-ink: #ffffff;
+    --good: #2f8f5b;
+    --good-bg: #e8f6ee;
+    --warn: #b36b00;
+    --warn-bg: #fdf1dd;
+    --danger: #b00020;
+    --danger-bg: #fbe7ea;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --font-display: 'Space Grotesk', 'Inter', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17141d;
+      --surface: #201c2b;
+      --surface-muted: #262134;
+      --border: #332c45;
+      --ink: #f1eef7;
+      --ink-muted: #a79fbb;
+      --accent: #b49cf0;
+      --accent-ink: #1a1424;
+      --good: #6bcf9a;
+      --good-bg: #16301f;
+      --warn: #e8b35c;
+      --warn-bg: #352708;
+      --danger: #f08c9c;
+      --danger-bg: #3a151b;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #17141d;
+    --surface: #201c2b;
+    --surface-muted: #262134;
+    --border: #332c45;
+    --ink: #f1eef7;
+    --ink-muted: #a79fbb;
+    --accent: #b49cf0;
+    --accent-ink: #1a1424;
+    --good: #6bcf9a;
+    --good-bg: #16301f;
+    --warn: #e8b35c;
+    --warn-bg: #352708;
+    --danger: #f08c9c;
+    --danger-bg: #3a151b;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 32px 64px;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+
+  .intro {
+    color: var(--ink-muted);
+    margin: 0 0 8px;
+    max-width: 60ch;
+  }
+
+  .progress-bar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    margin: 18px 0 28px;
+    box-shadow: 0 2px 10px rgba(20, 10, 40, 0.06);
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-muted);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 200ms ease;
+  }
+
+  section.block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px clamp(16px, 4vw, 26px);
+    margin-bottom: 20px;
+  }
+
+  .block h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .block .tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--surface-muted);
+    color: var(--ink-muted);
+  }
+
+  .tag.ai { background: var(--warn-bg); color: var(--warn); }
+  .tag.core { background: var(--good-bg); color: var(--good); }
+
+  .block .note {
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+    margin: 0 0 14px;
+  }
+
+  .case {
+    border-top: 1px solid var(--border);
+    padding: 14px 0;
+  }
+
+  .case:first-of-type { border-top: none; padding-top: 4px; }
+
+  .case-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .case-head input[type="checkbox"] {
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .case-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .case.done .case-title { color: var(--ink-muted); text-decoration: line-through; }
+
+  .case-body {
+    margin-top: 10px;
+    padding-left: 28px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .case-body ol, .case-body ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .case-body li { margin-bottom: 4px; }
+
+  .box {
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 0.88rem;
+  }
+
+  .box-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .box.expect { background: var(--good-bg); color: var(--ink); }
+  .box.expect .box-label { color: var(--good); }
+
+  .box.report { background: var(--surface-muted); color: var(--ink); border: 1px dashed var(--border); }
+  .box.report .box-label { color: var(--accent); }
+
+  footer {
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 0.8rem;
+    margin-top: 32px;
+  }
+
+  code {
+    background: var(--surface-muted);
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 0.9em;
+  }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+
+<div class="wrap">
+  <h1>Приёмка «Конструктора векторных композиций»</h1>
+  <p class="intro">
+    29 сценариев, по разделам. Для каждого — что сделать, что должно произойти, и что прислать в чат
+    (текст или скриншот). Отмечайте галочкой по ходу — прогресс сохраняется в этом браузере.
+  </p>
+
+  <div class="progress-bar">
+    <span id="progress-text">0 / 0</span>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <section class="block">
+    <h2>0. Запуск <span class="tag core">база</span></h2>
+    <p class="note">Если что-то из этого не работает — дальше можно не идти, пишите сразу.</p>
+
+    <div class="case" data-id="setup-1">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Установка и сборка библиотеки</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>В папке проекта: <code>npm install</code>, затем <code>npm run library</code>, затем <code>npm run dev</code>.</li>
+          <li>Откройте адрес из терминала (обычно <code>http://localhost:5173</code>) в браузере.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Без ошибок в терминале открывается страница с заголовком «Конструктор векторных композиций», видны три колонки: библиотека слева, холст по центру, панель справа.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Если ошибка — весь текст ошибки из терминала. Если всё ок — просто «запустилось».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="setup-2">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Автопроверка кода (необязательно, но полезно)</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>В той же папке: <code>npm run verify</code>.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>В конце — без слова <code>failed</code>/<code>error</code>, все тесты зелёные.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Если упало — последние 30–40 строк вывода из терминала.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>1. Библиотека и холст <span class="tag core">база</span></h2>
+
+    <div class="case" data-id="canvas-1">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Добавление объектов</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Слева в списке библиотеки кликните по 2–3 разным объектам (например «Книга», «Лампа»).</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Каждый клик добавляет объект в центр холста. Объекты не искажены, цвета как в референсе из Figma.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Скриншот холста с 2–3 объектами.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="canvas-2">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Перемещение и выделение</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Перетащите один объект мышью в другое место холста.</li>
+          <li>Кликните по пустому месту холста и, не отпуская, обведите рамкой несколько объектов.</li>
+          <li>Зажмите Shift и кликните по ещё одному объекту — он должен добавиться к выделению.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Объект следует за курсором. Рамка выделяет все объекты внутри неё (вокруг них появляется пунктирная рамка). Shift+клик добавляет/убирает объект из выделения, не сбрасывая остальное.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Коротко: «работает» / «не работает» + что именно пошло не так.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="canvas-3">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Поворот</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Выделите один объект — над ним появится круглая ручка поворота.</li>
+          <li>Потяните за неё мышью — объект должен вращаться.</li>
+          <li>Повторите, зажав Shift — поворот должен «прилипать» к шагу 15°.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Без Shift — поворот плавный. С зажатым Shift — только углы вида 0°, 15°, 30°, 45° и т.д.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="canvas-4">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Дублирование и удаление</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Выделите объект, нажмите <code>Ctrl+D</code> (на Mac — <code>Cmd+D</code>).</li>
+          <li>Выделите любой объект, нажмите <code>Delete</code> или <code>Backspace</code>.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span><code>Ctrl+D</code> создаёт копию рядом со сдвигом. <code>Delete</code> убирает выделенный объект с холста.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="canvas-5">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Слои и порядок</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Добавьте 2 объекта так, чтобы они перекрывались.</li>
+          <li>В панели справа («Слои») попробуйте перетащить один слой выше другого.</li>
+          <li>Выделите нижний объект на холсте и нажмите <code>]</code> (на передний план — <code>Ctrl+]</code>).</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Перетаскивание в списке слоёв меняет, какой объект сверху на холсте. Хоткеи <code>[</code>/<code>]</code> тоже меняют порядок.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Скриншот панели слоёв + холста, если что-то выглядит странно.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="canvas-6">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Главный / фоновый переключатель</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>В панели слоёв нажмите на пометку «главный»/«фоновый» у объекта, чтобы переключить.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Объект меняет цвет: главный — цветной, фоновый — монохромный (в тон подложки).</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="canvas-7">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Undo / Redo</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Сделайте 3–4 любых действия подряд (добавить, подвигать, удалить).</li>
+          <li>Нажмите <code>Ctrl+Z</code> несколько раз, потом <code>Ctrl+Shift+Z</code> несколько раз.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Каждое нажатие <code>Ctrl+Z</code> откатывает ровно один шаг назад, <code>Ctrl+Shift+Z</code> — повторяет вперёд. Простое выделение объекта кликом без перемещения НЕ должно создавать отдельный шаг истории.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает» + на каком шаге сломалось, если сломалось.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>2. Холст: размер и масштаб <span class="tag ai">новое</span></h2>
+    <p class="note">Эта панель — справа, открывается кнопкой «Холст и слои» на узком экране, либо видна сразу на широком.</p>
+
+    <div class="case" data-id="size-1">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Пресеты формата</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>В панели «Холст» нажмите по очереди «Квадрат», «Горизонталь», «Вертикаль».</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Форма холста меняется на квадрат / широкий / высокий. Объекты на холсте не меняют размер и пропорции, только позиция кадра вокруг них.</div>
+        <div class="box report"><span class="box-label">Прислать</span>По одному скриншоту на каждый из 3 форматов.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="size-2">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Свой размер ползунками</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Потяните ползунок «Ширина», затем «Высота» в панели «Холст».</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Холст меняет размер вслед за ползунком в реальном времени, появляется подпись «Свой размер». Пресеты перестают быть подсвечены.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="size-3">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Свой размер мышью за ручку холста</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Наведите мышь на правый край холста — курсор должен смениться на ⟷.</li>
+          <li>Потяните вправо/влево, затем то же самое с ручкой снизу и с уголком.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Холст меняет ширину/высоту/оба размера сразу, в зависимости от ручки.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="size-4">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">⚠️ Важная проверка: undo после изменения размера</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Добавьте объект, подвиньте его в сторону (это шаг истории №1).</li>
+          <li>Потяните ползунок ширины холста туда-обратно несколько раз (это могло раньше «съедать» историю — баг, который мы чинили).</li>
+          <li>Нажмите <code>Ctrl+Z</code> дважды.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Первый <code>Ctrl+Z</code> отменяет изменение размера холста. Второй <code>Ctrl+Z</code> возвращает объект на исходное место (до перемещения). Если после пары нажатий объект НЕ возвращается на исходную позицию — это регрессия, важно сообщить.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Обязательно сообщите результат, даже если «ок» — это проверка конкретного недавнего фикса.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="size-5">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Масштаб (зум) и «вписать в окно»</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Покрутите колесо мыши над холстом.</li>
+          <li>Потяните ползунок «Масштаб» внизу холста.</li>
+          <li>Нажмите на кнопку со значком «вписать в окно» рядом с ползунком.</li>
+          <li>Измените размер окна браузера (растяните/сузьте).</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Колесо мыши и ползунок одинаково масштабируют холст. Кнопка «вписать» возвращает холст целиком в видимую область. При изменении размера окна холст сам подстраивается (если вы не трогали зум руками до этого).</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="size-6">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">L / S детализация</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Добавьте объект, запомните его позицию.</li>
+          <li>В панели «Холст» переключите L → S, затем обратно S → L.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Меняется детализация отрисовки объекта, но его позиция на холсте не сдвигается.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>3. Палитра <span class="tag core">база</span></h2>
+
+    <div class="case" data-id="palette-1">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Встроенные схемы</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Добавьте пару объектов. В тулбаре сверху смените палитру: фиолетовая → оранжевая → бирюзовая.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Холст и подложка плавно перекрашиваются, объекты не «мигают» и не пропадают.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Скриншот с любой из не-фиолетовых палитр.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="palette-2">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Редактор палитры (модальное окно)</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Нажмите «Редактор палитры» в тулбаре.</li>
+          <li>Измените любой цвет (кликом по образцу или вводом hex-кода).</li>
+          <li>Нажмите «Применить к холсту».</li>
+          <li>Нажмите крестик или клавишу <code>Esc</code>, чтобы закрыть окно.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Редактор открывается поверх всего окна (модалка с затемнением фона). После «Применить» холст перекрашивается в новый цвет. Окно закрывается и крестиком, и Esc.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Скриншот открытого окна редактора.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="palette-3">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Загрузка палитры из файла</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Нажмите «Загрузить палитру (.json)» и выберите любой НЕ json-файл (например, картинку) или испорченный json.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Понятное сообщение об ошибке (не белый экран, не молчаливое ничего).</div>
+        <div class="box report"><span class="box-label">Прислать</span>Текст сообщения об ошибке.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>4. Экспорт <span class="tag core">база</span></h2>
+
+    <div class="case" data-id="export-1">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Скачивание SVG</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Соберите композицию из 2–3 объектов.</li>
+          <li>Нажмите «Скачать SVG».</li>
+          <li>Откройте скачанный файл в браузере (перетащите в новую вкладку) или в Figma/Illustrator, если есть под рукой.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Файл открывается, выглядит как на холсте, не размытый (не картинка — именно векторный SVG, должен нормально увеличиваться без потери качества).</div>
+        <div class="box report"><span class="box-label">Прислать</span>Сам скачанный .svg файл или скриншот открытого файла.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>5. Сценарий «по метафоре» — локальный подбор <span class="tag core">база</span></h2>
+
+    <div class="case" data-id="scenario1-1">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Сборка по готовому примеру</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Откройте вкладку «По метафоре».</li>
+          <li>Введите «Финансовая грамотность» и нажмите «Собрать».</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>На холсте появляются объекты (кошелёк/монета и т.п.), под полем ввода — список с подписью, почему выбран каждый объект (например «Монета: экономия, инвестиции»).</div>
+        <div class="box report"><span class="box-label">Прислать</span>Скриншот результата с причинами.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="scenario1-2">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">«Другой вариант» и «Заменить объект»</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>После сборки нажмите «Другой вариант» 2–3 раза.</li>
+          <li>Нажмите «Заменить объект» у одного из элементов списка.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>«Другой вариант» меняет расположение объектов на холсте, но не сам набор объектов. «Заменить» меняет один конкретный объект на альтернативу.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="scenario1-3">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Бессмысленный ввод</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Введите случайный набор букв, например «ывалдыва уквыол» и нажмите «Собрать».</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Приложение не падает, появляется сообщение в духе «Точных совпадений нет, подобрали близкие по смыслу», и какие-то объекты всё равно появляются на холсте.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>6. Сценарий «по компонентам» <span class="tag core">база</span></h2>
+
+    <div class="case" data-id="scenario2-1">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Распознавание по списку</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Откройте вкладку «По компонентам».</li>
+          <li>Введите «книга, телефон, наушники» и нажмите «Распознать».</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Появляются три чипа с распознанными названиями.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Скриншот с чипами.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="scenario2-2">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Опечатка и неизвестное слово</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Введите «кнга, абвгдёжз, ручка» (с опечаткой в первом слове и бессмыслицей во втором).</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>«Кнга» всё равно распознаётся как «Книга» (опечатка прощается), бессмыслица попадает в «не распознано», но не блокирует остальные слова.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Скриншот результата.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="scenario2-3">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Главный/фоновый на чипе и сборка</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>На одном из чипов переключите «главный»/«фоновый».</li>
+          <li>Нажмите «Собрать».</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Объекты появляются на холсте с выбранными состояниями (фоновый — монохромный).</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>7. Общее и мобильный вид <span class="tag core">база</span></h2>
+
+    <div class="case" data-id="misc-1">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Узкий экран</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Сузьте окно браузера до ширины телефона (или откройте на телефоне).</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Библиотека и панель «Холст и слои» прячутся за кнопки сверху, открываются по клику поверх холста, не ломают вёрстку.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Скриншот с телефона/узкого окна.</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="misc-2">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Обновление страницы не теряет работу</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Соберите любую композицию, обновите страницу (F5).</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Композиция остаётся на месте — она сохраняется автоматически.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="misc-3">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">50+ объектов без тормозов</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Накликайте один и тот же объект из библиотеки раз 50 подряд.</li>
+          <li>Попробуйте подвигать/повернуть любой из них.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Холст не подвисает заметно, перетаскивание остаётся плавным.</div>
+        <div class="box report"><span class="box-label">Прислать</span>Субъективное ощущение: «плавно» / «подтормаживает».</div>
+      </div>
+    </div>
+
+    <div class="case" data-id="misc-4">
+      <div class="case-head">
+        <input type="checkbox">
+        <span class="case-title">Окно горячих клавиш</span>
+      </div>
+      <div class="case-body">
+        <ol>
+          <li>Нажмите клавишу со знаком «?» (она же рядом с правым Shift — Shift + /).</li>
+          <li>Нажмите Esc, чтобы закрыть.</li>
+          <li>Откройте снова кнопкой с иконкой клавиатуры в правом верхнем углу.</li>
+        </ol>
+        <div class="box expect"><span class="box-label">Должно быть</span>Открывается список горячих клавиш по разделам, закрывается по Esc и по крестику.</div>
+        <div class="box report"><span class="box-label">Прислать</span>«работает» / «не работает».</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Прогресс хранится только в этом браузере (localStorage), мне не передаётся — присылайте результаты сюда в чат отдельно.
+  </footer>
+</div>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'vector-composer-qa-checklist-v1';
+  var cases = Array.prototype.slice.call(document.querySelectorAll('.case'));
+  var total = cases.length;
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  function updateProgress() {
+    var done = cases.filter(function (c) { return c.classList.contains('done'); }).length;
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progress-text').textContent = done + ' / ' + total;
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  var state = loadState();
+
+  cases.forEach(function (caseEl) {
+    var id = caseEl.getAttribute('data-id');
+    var checkbox = caseEl.querySelector('input[type="checkbox"]');
+    if (state[id]) {
+      checkbox.checked = true;
+      caseEl.classList.add('done');
+    }
+    checkbox.addEventListener('change', function () {
+      caseEl.classList.toggle('done', checkbox.checked);
+      state[id] = checkbox.checked;
+      saveState(state);
+      updateProgress();
+    });
+  });
+
+  updateProgress();
+})();
+</script>

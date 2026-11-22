@@ -1,0 +1,16 @@
+{
+  "id": "orange",
+  "name": "Оранжевая",
+  "background": {
+    "bg1": "#FDD7B9",
+    "bg2": "#FAC896",
+    "bg3": "#D27532",
+    "ink": "#181817"
+  },
+  "object": {
+    "obj1": "#F9ECB0",
+    "obj2": "#80DADA",
+    "obj3": "#BEEBEB",
+    "white": "#FFFFFF"
+  }
+}

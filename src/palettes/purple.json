@@ -1,0 +1,16 @@
+{
+  "id": "purple",
+  "name": "Фиолетовая",
+  "background": {
+    "bg1": "#D7CDF5",
+    "bg2": "#AA9BF0",
+    "bg3": "#7864D7",
+    "ink": "#181817"
+  },
+  "object": {
+    "obj1": "#F9ECB0",
+    "obj2": "#F9A3AA",
+    "obj3": "#FFE3E1",
+    "white": "#FFFFFF"
+  }
+}

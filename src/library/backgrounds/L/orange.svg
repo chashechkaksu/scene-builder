@@ -1,0 +1,13 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#bg-frame-orange-L-clip0_21_25399)">
+<rect width="1000" height="1000" fill="var(--role-bg-1, #FDD7B9)" data-role="bg-1"/>
+<path d="M1000.42 1044.9C1089.68 905.891 1024.4 763.465 1033.6 738.17L470.651 1079.92L1000.42 1044.9Z" fill="var(--role-bg-2, #FAC896)" data-role="bg-2"/>
+<line x1="257.678" y1="-88.5925" x2="1045.16" y2="355" stroke-width="2" stroke="var(--role-bg-3, #D27532)" data-role="bg-3"/>
+<line x1="384.518" y1="1132.25" x2="1009.8" y2="751.033" stroke-width="2" stroke="var(--role-bg-3, #D27532)" data-role="bg-3"/>
+</g>
+<defs>
+<clipPath id="bg-frame-orange-L-clip0_21_25399">
+<rect width="1000" height="1000" fill="white"/>
+</clipPath>
+</defs>
+</svg>

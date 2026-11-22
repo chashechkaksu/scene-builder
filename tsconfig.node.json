@@ -1,0 +1,37 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "verbatimModuleSyntax": true,
+    "types": ["node"],
+    "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator", "DOM"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "vite.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "scripts/**/*.ts",
+    "eslint.config.js",
+    "src/core/palette/schema.ts",
+    "src/core/geometry/bbox.ts",
+    "src/core/export/export.ts",
+    "src/features/canvas/geometry.ts",
+    "src/shared/types.ts",
+    "src/shared/formats.ts",
+    "src/core/matcher/matcher.ts",
+    "src/core/matcher/text.ts",
+    "src/core/matcher/dictionary-index.ts",
+    "src/library/semantics.ts",
+    "src/core/compose/select-composed-objects.ts",
+    "src/core/layout/layout.ts",
+    "src/core/layout/constants.ts",
+    "src/core/layout/prng.ts",
+    "tests/unit/build-library-pipeline.spec.ts"
+  ]
+}
