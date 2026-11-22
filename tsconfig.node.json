@@ -29,9 +29,12 @@
     "src/core/matcher/dictionary-index.ts",
     "src/library/semantics.ts",
     "src/core/compose/select-composed-objects.ts",
+    "src/core/compose/compose-metaphor.ts",
+    "src/core/matcher/index.ts",
     "src/core/layout/layout.ts",
     "src/core/layout/constants.ts",
     "src/core/layout/prng.ts",
+    "src/core/layout/object-scale.ts",
     "tests/unit/build-library-pipeline.spec.ts"
   ]
 }

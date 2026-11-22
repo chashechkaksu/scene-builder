@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
+import { composeMetaphor } from '@/core/compose/compose-metaphor'
 import { matchMetaphor } from '@/core/matcher'
 import metaphors from '../fixtures/metaphors.json'
 
 interface MetaphorCase {
   input: string
   expectedObjectIds: string[]
+  minObjects?: number
 }
 
 const cases = metaphors as MetaphorCase[]
@@ -47,4 +49,25 @@ describe('core/matcher regression (tests/fixtures/metaphors.json)', () => {
     const result = matchMetaphor(testCase.input)
     expect(result.matches.length).toBeGreaterThan(0)
   })
+
+  it.each(cases)('composition has 4-5 objects with a background one: "$input"', (testCase) => {
+    const { composed } = composeMetaphor(testCase.input)
+    expect(composed.length).toBeGreaterThanOrEqual(testCase.minObjects ?? 4)
+    expect(composed.length).toBeLessThanOrEqual(5)
+    expect(new Set(composed.map((object) => object.objectId)).size).toBe(composed.length)
+    expect(composed.some((object) => object.state === 'bg')).toBe(true)
+    const mains = composed.filter((object) => object.state === 'main')
+    expect(mains.length).toBeGreaterThanOrEqual(1)
+    expect(mains.length).toBeLessThanOrEqual(3)
+  })
+
+  it.each(cases.filter((testCase) => testCase.expectedObjectIds.length > 0))(
+    'semantic matches are main, fillers are background: "$input"',
+    (testCase) => {
+      const { composed } = composeMetaphor(testCase.input)
+      for (const object of composed) {
+        if (object.score === 0) expect(object.state).toBe('bg')
+      }
+    },
+  )
 })

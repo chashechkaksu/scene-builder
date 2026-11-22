@@ -325,8 +325,11 @@ export function matchComponents(
   }
 }
 
-const MIN_COMPOSITION_OBJECTS = 3
+export const MIN_COMPOSITION_OBJECTS = 4
 
+/**
+ * Pads matches up to `minimum` objects with neutral fillers (score 0), then with any other library object.
+ */
 export function ensureMinimumObjects(
   matches: ObjectMatch[],
   minimum: number = MIN_COMPOSITION_OBJECTS,
@@ -334,12 +337,13 @@ export function ensureMinimumObjects(
   if (matches.length >= minimum) return matches
   const nameLookup = nameRuByObjectId()
   const present = new Set(matches.map((match) => match.objectId))
-  const padding = NEUTRAL_FALLBACK_OBJECT_IDS.filter((objectId) => !present.has(objectId)).map(
-    (objectId) => ({
+  const fillerIds = [...NEUTRAL_FALLBACK_OBJECT_IDS, ...manifest.objects.map((object) => object.id)]
+  const padding = [...new Set(fillerIds)]
+    .filter((objectId) => !present.has(objectId))
+    .map((objectId) => ({
       objectId,
       score: 0,
       reasons: [`${nameLookup.get(objectId) ?? objectId}: дополняет композицию`],
-    }),
-  )
+    }))
   return [...matches, ...padding].slice(0, Math.max(minimum, matches.length))
 }

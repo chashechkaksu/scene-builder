@@ -56,6 +56,7 @@ export interface Scene {
   format: Format
   customSize?: CanvasSize
   size: Size
+  objectScale?: number
   paletteId: string
   items: SceneItem[]
 }

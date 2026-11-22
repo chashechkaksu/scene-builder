@@ -1,4 +1,5 @@
 import { itemTransform, sliceTransform, type Rect } from '@/features/canvas/geometry'
+import { resolveObjectScale } from '@/core/layout/object-scale'
 import { ROLES, roleToHex, type Palette, type Role } from '@/core/palette/schema'
 import { resolveFormat, type FormatDefinition } from '@/shared/formats'
 import type { ObjectState, Scene, Size } from '@/shared/types'
@@ -143,6 +144,7 @@ function renderObjectGroup(
   scene: Scene,
   palette: Palette,
   assets: ExportAssetSource,
+  objectScale: number,
 ): string {
   const symbol = assets.getObjectSymbol(item.objectId, scene.size, item.state)
   const bbox = assets.getObjectBBox(item.objectId, scene.size, item.state)
@@ -151,7 +153,7 @@ function renderObjectGroup(
       `core/export: не найден ассет объекта "${item.objectId}" (${scene.size}/${item.state})`,
     )
   }
-  const transform = itemTransform(item, bbox)
+  const transform = itemTransform(item, bbox, objectScale)
   const content = renderSymbolInstance(symbol, palette, `obj${index}-`)
   const groupId = `obj-${item.objectId}-${index}`
   return `<g id="${groupId}" data-object="${item.objectId}" data-state="${item.state}" transform="${transform}">${content}</g>`
@@ -165,8 +167,13 @@ export function exportSceneToSvg(
 ): string {
   const format = resolveFormat(scene)
   const backgroundMarkup = renderBackground(palette, showBackground, assets, format)
+  const bboxes = scene.items.flatMap((item) => {
+    const bbox = assets.getObjectBBox(item.objectId, scene.size, item.state)
+    return bbox ? [bbox] : []
+  })
+  const objectScale = resolveObjectScale(scene.objectScale, bboxes, format)
   const objectGroups = scene.items.map((item, index) =>
-    renderObjectGroup(item, index, scene, palette, assets),
+    renderObjectGroup(item, index, scene, palette, assets, objectScale),
   )
 
   return [

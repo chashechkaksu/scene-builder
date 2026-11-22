@@ -21,6 +21,7 @@ export function applyComposition(objects: ComposedObject[], seed: number): void 
     format: sceneStore.scene.format,
     customSize: sceneStore.scene.customSize,
     size,
+    objectScale: sceneStore.scene.objectScale,
     seed,
   })
   sceneStore.replaceItems(

@@ -1,7 +1,16 @@
 import type { BBox } from '@/core/geometry/bbox'
 import { mulberry32, type Prng } from '@/core/layout/prng'
 import {
-  LAYOUT_ANCHOR_FRACTIONS,
+  LAYOUT_ANCHOR_FRACTIONS_LANDSCAPE,
+  LAYOUT_ANCHOR_FRACTIONS_PORTRAIT,
+  LAYOUT_ANCHOR_FRACTIONS_SQUARE,
+  LAYOUT_LANDSCAPE_ASPECT_THRESHOLD,
+  LAYOUT_PORTRAIT_ASPECT_THRESHOLD,
+  LAYOUT_MAIN_MAX_MAIN_OVERLAP_RATIO,
+  LAYOUT_MAIN_MIN_VISIBLE_RATIO,
+  LAYOUT_MAX_OBJECT_FRAME_AREA_RATIO,
+  LAYOUT_VIOLATION_PENALTY,
+  LAYOUT_VISIBILITY_SAMPLE_GRID,
   LAYOUT_CANDIDATE_COUNT,
   LAYOUT_CENTER_BALANCE_TOLERANCE_RATIO,
   LAYOUT_COVERAGE_TARGET_MAX,
@@ -18,6 +27,7 @@ import {
   LAYOUT_OVERLAP_PAIR_RATIO_MIN,
   LAYOUT_SCORE_WEIGHTS,
 } from '@/core/layout/constants'
+import { resolveObjectScale } from '@/core/layout/object-scale'
 import { resolveFormat, type FormatDefinition } from '@/shared/formats'
 import type { CanvasSize, Format, ObjectState, Size } from '@/shared/types'
 
@@ -37,6 +47,7 @@ export interface LayoutRequest {
   format: Format
   customSize?: CanvasSize | undefined
   size: Size
+  objectScale?: number | undefined
   seed: number
 }
 
@@ -126,8 +137,15 @@ export function computeLayoutDensityScale(format: FormatDefinition, itemCount: n
   return clamp(countFactor * aspectFactor, LAYOUT_MIN_DENSITY_SCALE, LAYOUT_MAX_DENSITY_SCALE)
 }
 
+function anchorFractionsFor(format: FormatDefinition): typeof LAYOUT_ANCHOR_FRACTIONS_SQUARE {
+  const aspectRatio = format.height > 0 ? format.width / format.height : 1
+  if (aspectRatio >= LAYOUT_LANDSCAPE_ASPECT_THRESHOLD) return LAYOUT_ANCHOR_FRACTIONS_LANDSCAPE
+  if (aspectRatio <= LAYOUT_PORTRAIT_ASPECT_THRESHOLD) return LAYOUT_ANCHOR_FRACTIONS_PORTRAIT
+  return LAYOUT_ANCHOR_FRACTIONS_SQUARE
+}
+
 function buildAnchors(format: FormatDefinition): Point[] {
-  return LAYOUT_ANCHOR_FRACTIONS.map(([fx, fy]) => ({
+  return anchorFractionsFor(format).map(([fx, fy]) => ({
     x: fx * format.width,
     y: fy * format.height,
   }))
@@ -181,6 +199,47 @@ function mainVisibilityScore(
   const obscuredScore = obscuredRatio >= LAYOUT_MAIN_OBSCURED_AREA_RATIO ? 0 : 1 - obscuredRatio
 
   return (edgeScore + obscuredScore) / 2
+}
+
+function contains(bbox: BBox, x: number, y: number): boolean {
+  return x >= bbox.x && x <= bbox.x + bbox.width && y >= bbox.y && y <= bbox.y + bbox.height
+}
+
+/** Share of the item's bbox that lies inside the frame and is not covered by later items (grid-sampled). */
+export function visibleAreaRatio(item: BBox, later: BBox[], frame: BBox): number {
+  const grid = LAYOUT_VISIBILITY_SAMPLE_GRID
+  let visible = 0
+  for (let row = 0; row < grid; row++) {
+    for (let col = 0; col < grid; col++) {
+      const x = item.x + ((col + 0.5) / grid) * item.width
+      const y = item.y + ((row + 0.5) / grid) * item.height
+      if (!contains(frame, x, y)) continue
+      if (later.some((other) => contains(other, x, y))) continue
+      visible++
+    }
+  }
+  return visible / (grid * grid)
+}
+
+export function exceedsFrameAreaLimit(item: BBox, frame: BBox): boolean {
+  const frameArea = frame.width * frame.height
+  return frameArea > 0 && (item.width * item.height) / frameArea > LAYOUT_MAX_OBJECT_FRAME_AREA_RATIO
+}
+
+function countReadabilityViolations(candidate: CandidateItem[], frame: BBox): number {
+  let violations = 0
+  candidate.forEach((item, index) => {
+    if (exceedsFrameAreaLimit(item.worldBBox, frame)) violations += 0.25
+    if (item.input.state !== 'main') return
+    const later = candidate.slice(index + 1).map((other) => other.worldBBox)
+    if (visibleAreaRatio(item.worldBBox, later, frame) < LAYOUT_MAIN_MIN_VISIBLE_RATIO) violations++
+    const area = item.worldBBox.width * item.worldBBox.height
+    const otherMainOverlap = candidate
+      .filter((other) => other !== item && other.input.state === 'main')
+      .reduce((sum, other) => sum + intersectionArea(item.worldBBox, other.worldBBox), 0)
+    if (area > 0 && otherMainOverlap / area > LAYOUT_MAIN_MAX_MAIN_OVERLAP_RATIO) violations++
+  })
+  return violations
 }
 
 function scoreCandidate(
@@ -254,14 +313,29 @@ function scoreCandidate(
     weights.mainVisibility * mainScore +
     weights.clustering * clusteringScore
 
-  return totalWeight > 0 ? weightedScore / totalWeight : 0
+  const baseScore = totalWeight > 0 ? weightedScore / totalWeight : 0
+  return baseScore - LAYOUT_VIOLATION_PENALTY * countReadabilityViolations(candidate, canvasRect)
 }
 
 export function layoutScene(request: LayoutRequest): LayoutPlacement[] {
   if (request.items.length === 0) return []
 
   const format = resolveFormat(request)
-  const orderedItems = stableOrderByState(request.items)
+  const objectScale = resolveObjectScale(
+    request.objectScale,
+    request.items.map((item) => item.bbox),
+    format,
+  )
+  const orderedItems = stableOrderByState(
+    request.items.map((item) => ({
+      ...item,
+      bbox: {
+        ...item.bbox,
+        width: item.bbox.width * objectScale,
+        height: item.bbox.height * objectScale,
+      },
+    })),
+  )
   const densityScale = computeLayoutDensityScale(format, orderedItems.length)
   const canvasMinSide = Math.min(format.width, format.height)
   const anchors = buildAnchors(format)

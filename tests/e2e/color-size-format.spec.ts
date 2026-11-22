@@ -192,3 +192,19 @@ test('ползунок масштаба меняет масштаб холста
   await slider.fill('150')
   await expect(page.locator('.canvas-zoom__value')).toHaveText('150%')
 })
+
+test('ползунок масштаба объектов меняет масштаб, «Авто» возвращает автоматический', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Добавить на холст: Книга' }).click()
+  const item = page.locator('.canvas-item').first()
+  const autoTransform = await item.getAttribute('transform')
+
+  await page.locator('#object-scale').fill('0.4')
+  await expect(item).toHaveAttribute('transform', /scale\(0\.4 0\.4\)/)
+  await expect(page.getByText('40%')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Авто', exact: true }).click()
+  await expect(item).toHaveAttribute('transform', autoTransform ?? '')
+})

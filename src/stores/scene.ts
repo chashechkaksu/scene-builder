@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef, watch } from 'vue'
+import { clampObjectScale } from '@/core/layout/object-scale'
 import { clampCanvasSide } from '@/shared/formats'
 import type { Format, ObjectState, Scene, SceneItem, Size } from '@/shared/types'
 
@@ -36,6 +37,10 @@ function isCustomSize(value: unknown): boolean {
   return typeof size.width === 'number' && typeof size.height === 'number'
 }
 
+function isObjectScale(value: unknown): boolean {
+  return value === undefined || (typeof value === 'number' && Number.isFinite(value))
+}
+
 function isSize(value: unknown): value is Size {
   return value === 'L' || value === 'S'
 }
@@ -61,6 +66,7 @@ function isScene(value: unknown): value is Scene {
     isFormat(candidate.format) &&
     isCustomSize(candidate.customSize) &&
     isSize(candidate.size) &&
+    isObjectScale(candidate.objectScale) &&
     typeof candidate.paletteId === 'string' &&
     Array.isArray(candidate.items) &&
     candidate.items.every(isSceneItem)
@@ -339,6 +345,13 @@ export const useSceneStore = defineStore('scene', () => {
     })
   }
 
+  function setObjectScale(value: number | undefined): void {
+    mutate((draft) => {
+      if (value === undefined) delete draft.objectScale
+      else draft.objectScale = clampObjectScale(value)
+    })
+  }
+
   function setPaletteId(paletteId: string): void {
     mutate((draft) => {
       draft.paletteId = paletteId
@@ -383,6 +396,7 @@ export const useSceneStore = defineStore('scene', () => {
     setFormat,
     setCanvasSize,
     setSize,
+    setObjectScale,
     setPaletteId,
     undo,
     redo,

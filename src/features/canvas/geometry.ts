@@ -65,11 +65,22 @@ export function rotationHandlePosition(item: SceneItem, bbox: Rect): Point {
   return { x: item.x + rotated.x, y: item.y + rotated.y }
 }
 
-export function itemTransform(item: SceneItem, bbox: Rect): string {
+export function scaledBBox(bbox: Rect, scale: number): Rect {
+  const width = bbox.width * scale
+  const height = bbox.height * scale
+  return {
+    x: bbox.x + (bbox.width - width) / 2,
+    y: bbox.y + (bbox.height - height) / 2,
+    width,
+    height,
+  }
+}
+
+export function itemTransform(item: SceneItem, bbox: Rect, objectScale = 1): string {
   const cx = bbox.x + bbox.width / 2
   const cy = bbox.y + bbox.height / 2
-  const scaleX = item.flipX ? -1 : 1
-  return `translate(${item.x} ${item.y}) rotate(${item.rotation}) scale(${scaleX} 1) translate(${-cx} ${-cy})`
+  const scaleX = (item.flipX ? -1 : 1) * objectScale
+  return `translate(${item.x} ${item.y}) rotate(${item.rotation}) scale(${scaleX} ${objectScale}) translate(${-cx} ${-cy})`
 }
 
 export function sliceTransform(viewWidth: number, viewHeight: number, target: Rect): string {

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { RefreshCw, Shuffle, Wand2 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
-import { ensureMinimumObjects, matchMetaphor, type ObjectMatch } from '@/core/matcher'
+import { composeMetaphor } from '@/core/compose/compose-metaphor'
+import type { ObjectMatch } from '@/core/matcher'
 import {
   applyComposition,
   nextLayoutSeed,
-  selectComposedObjects,
   type ComposedObject,
 } from '@/features/scenarios/compose'
 import { celebrateComposition } from '@/shared/celebrate'
@@ -52,17 +52,10 @@ function showComposition(objects: SelectedObject[]): void {
 function onCompose(): void {
   const text = input.value.trim()
   if (text.length === 0) return
-  const result = matchMetaphor(text)
-  const matches = ensureMinimumObjects(result.matches)
-  ranked.value = matches
-  confident.value = result.confident
-  const picked = selectComposedObjects(matches.map((match) => match.objectId))
-  showComposition(
-    picked.map((object) => {
-      const match = matches.find((candidate) => candidate.objectId === object.objectId)
-      return { ...object, score: match?.score ?? 0, reasons: match?.reasons ?? [] }
-    }),
-  )
+  const composition = composeMetaphor(text)
+  ranked.value = composition.ranked
+  confident.value = composition.confident
+  showComposition(composition.composed)
 }
 
 function onExample(example: string): void {

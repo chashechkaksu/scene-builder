@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { computeLayoutDensityScale, layoutScene, type LayoutItemInput } from '@/core/layout/layout'
+import {
+  LAYOUT_MAIN_MAX_MAIN_OVERLAP_RATIO,
+  LAYOUT_MAIN_MIN_VISIBLE_RATIO,
+  LAYOUT_MAX_OBJECT_FRAME_AREA_RATIO,
+} from '@/core/layout/constants'
+import {
+  computeLayoutDensityScale,
+  exceedsFrameAreaLimit,
+  layoutScene,
+  visibleAreaRatio,
+  type LayoutItemInput,
+} from '@/core/layout/layout'
 import { getFormat } from '@/shared/formats'
 import type { Format, ObjectState } from '@/shared/types'
 
@@ -176,3 +187,61 @@ describe('computeLayoutDensityScale', () => {
     expect(scaleMany).toBeLessThanOrEqual(scaleFew)
   })
 })
+
+describe('readability thresholds', () => {
+  const frame = { x: 0, y: 0, width: 1000, height: 1000 }
+  const box = (x: number, y: number, width: number, height: number) => ({ x, y, width, height })
+
+  it('visibleAreaRatio accounts for frame cropping and later overlaps', () => {
+    expect(visibleAreaRatio(box(100, 100, 200, 200), [], frame)).toBeCloseTo(1, 5)
+    expect(visibleAreaRatio(box(-100, 0, 200, 200), [], frame)).toBeCloseTo(0.5, 1)
+    expect(visibleAreaRatio(box(100, 100, 200, 200), [box(100, 100, 100, 200)], frame)).toBeCloseTo(
+      0.5,
+      1,
+    )
+    expect(visibleAreaRatio(box(2000, 2000, 100, 100), [], frame)).toBe(0)
+  })
+
+  it('exceedsFrameAreaLimit flags objects larger than the area share limit', () => {
+    const side = Math.sqrt(LAYOUT_MAX_OBJECT_FRAME_AREA_RATIO * 1_000_000)
+    expect(exceedsFrameAreaLimit(box(0, 0, side - 1, side - 1), frame)).toBe(false)
+    expect(exceedsFrameAreaLimit(box(0, 0, side + 5, side + 5), frame)).toBe(true)
+  })
+
+  it('main objects stay visible and do not heavily overlap each other (feasible sizes)', () => {
+    for (const format of FORMATS) {
+      for (const seed of SEEDS) {
+        for (const count of COUNTS.filter((value) => value <= 5)) {
+          const items = makeItems(count).map((item) => ({ ...item, state: 'main' as ObjectState }))
+          const result = layoutScene({ items, format, size: 'L', seed })
+          const formatDef = getFormat(format)
+          const canvasRect = { x: 0, y: 0, width: formatDef.width, height: formatDef.height }
+          const boxes = result.map((placement) => {
+            const input = items.find((item) => item.objectId === placement.objectId)
+            return placementWorldBBox(placement, input?.bbox ?? { width: 0, height: 0 })
+          })
+          boxes.forEach((worldBox, index) => {
+            const later = boxes.slice(index + 1)
+            const visible = visibleAreaRatio(worldBox, later, canvasRect)
+            expect(visible).toBeGreaterThanOrEqual(LAYOUT_MAIN_MIN_VISIBLE_RATIO - 0.15)
+            const overlap = boxes
+              .filter((_, other) => other !== index)
+              .reduce((sum, other) => sum + overlapArea(worldBox, other), 0)
+            expect(overlap / (worldBox.width * worldBox.height)).toBeLessThanOrEqual(
+              LAYOUT_MAIN_MAX_MAIN_OVERLAP_RATIO + 0.15,
+            )
+          })
+        }
+      }
+    }
+  })
+})
+
+function overlapArea(
+  a: { x: number; y: number; width: number; height: number },
+  b: { x: number; y: number; width: number; height: number },
+): number {
+  const w = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)
+  const h = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y)
+  return w > 0 && h > 0 ? w * h : 0
+}

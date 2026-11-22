@@ -7,6 +7,7 @@ const props = defineProps<{
   item: SceneItem
   symbolId: string
   bbox: Rect
+  objectScale: number
   selected: boolean
   override?: Partial<Pick<SceneItem, 'x' | 'y' | 'rotation'>>
 }>()
@@ -16,7 +17,7 @@ const emit = defineEmits<{
 }>()
 
 const transform = computed(() =>
-  itemTransform(props.override ? { ...props.item, ...props.override } : props.item, props.bbox),
+  itemTransform(props.override ? { ...props.item, ...props.override } : props.item, props.bbox, props.objectScale),
 )
 
 function onPointerDown(event: PointerEvent): void {

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { OBJECT_SCALE_MAX, OBJECT_SCALE_MIN, OBJECT_SCALE_STEP } from '@/core/layout/constants'
+import { clampObjectScale } from '@/core/layout/object-scale'
+import { useEffectiveObjectScale } from '@/features/canvas/object-scale'
 import {
   CANVAS_SIDE_STEP,
   FORMATS,
@@ -20,6 +23,8 @@ const sizes: Array<{ id: Size; hint: string }> = [
 ]
 
 const canvas = computed(() => resolveFormat(sceneStore.scene))
+const effectiveScale = useEffectiveObjectScale()
+const isAutoScale = computed(() => sceneStore.scene.objectScale === undefined)
 const isCustom = computed(() => sceneStore.scene.customSize !== undefined)
 
 function readNumber(event: Event): number {
@@ -46,6 +51,18 @@ function onWidth(event: Event): void {
 function onHeight(event: Event): void {
   const value = readNumber(event)
   if (Number.isFinite(value)) applySize(canvas.value.width, value)
+}
+
+function onScale(event: Event): void {
+  const value = readNumber(event)
+  if (!Number.isFinite(value)) return
+  if (!sliderDragStarted) {
+    sceneStore.beginInteraction()
+    sliderDragStarted = true
+  }
+  sceneStore.applyWithoutHistory((draft) => {
+    draft.objectScale = clampObjectScale(value)
+  })
 }
 
 function onSliderChange(): void {
@@ -137,6 +154,35 @@ function onSliderChange(): void {
     <p class="canvas-settings__hint">
       Размер можно менять и мышью: потяните ручку у правого или нижнего края холста.
     </p>
+
+    <div class="canvas-settings__block">
+      <label
+        class="canvas-settings__label"
+        for="object-scale"
+      >
+        Масштаб объектов
+        <output>{{ Math.round(effectiveScale * 100) }}%{{ isAutoScale ? ' (авто)' : '' }}</output>
+      </label>
+      <input
+        id="object-scale"
+        type="range"
+        :min="OBJECT_SCALE_MIN"
+        :max="OBJECT_SCALE_MAX"
+        :step="OBJECT_SCALE_STEP"
+        :value="effectiveScale"
+        @input="onScale"
+        @change="onSliderChange"
+      >
+      <button
+        type="button"
+        class="canvas-settings__segment"
+        :class="{ 'canvas-settings__segment--active': isAutoScale }"
+        :aria-pressed="isAutoScale"
+        @click="sceneStore.setObjectScale(undefined)"
+      >
+        Авто
+      </button>
+    </div>
 
     <div class="canvas-settings__block">
       <span class="canvas-settings__label">Детализация</span>

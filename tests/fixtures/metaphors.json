@@ -1,34 +1,287 @@
 [
-  { "input": "Защита личных данных", "expectedObjectIds": ["phone", "folder"] },
-  { "input": "Идея, которая зажигает", "expectedObjectIds": ["lamp"] },
-  { "input": "Финансовая грамотность", "expectedObjectIds": ["wallet", "coin"] },
-  { "input": "Озарение среди ночи", "expectedObjectIds": ["lamp"] },
-  { "input": "Решение сложной задачи", "expectedObjectIds": ["puzzle"] },
-  { "input": "Часть большого целого", "expectedObjectIds": ["puzzle"] },
-  { "input": "Инвестиции и сбережения", "expectedObjectIds": ["coin"] },
-  { "input": "Накопить на мечту", "expectedObjectIds": ["coin", "wallet"] },
-  { "input": "Бюджет на покупки", "expectedObjectIds": ["wallet"] },
-  { "input": "Контроль расходов семьи", "expectedObjectIds": ["wallet"] },
-  { "input": "Музыка для концентрации", "expectedObjectIds": ["headphones"] },
-  { "input": "Подкаст в дороге", "expectedObjectIds": ["headphones"] },
-  { "input": "Фокус и тишина", "expectedObjectIds": ["headphones"] },
-  { "input": "Знания и обучение", "expectedObjectIds": ["book"] },
-  { "input": "История на страницах", "expectedObjectIds": ["book"] },
-  { "input": "Дневник воспоминаний", "expectedObjectIds": ["book"] },
-  { "input": "Мобильное приложение для связи", "expectedObjectIds": ["phone"] },
-  { "input": "Звонок другу", "expectedObjectIds": ["phone"] },
-  { "input": "Уведомление в мессенджере", "expectedObjectIds": ["phone"] },
-  { "input": "Организация документов проекта", "expectedObjectIds": ["folder"] },
-  { "input": "Архив отчетов компании", "expectedObjectIds": ["folder"] },
-  { "input": "Подпись договора", "expectedObjectIds": ["pen"] },
-  { "input": "Письмо от руки", "expectedObjectIds": ["pen"] },
-  { "input": "Творческое вдохновение для текста", "expectedObjectIds": ["pen"] },
-  { "input": "Весенний подарок к празднику", "expectedObjectIds": ["tulips"] },
-  { "input": "Забота и нежность", "expectedObjectIds": ["tulips"] },
-  { "input": "Рост и новое начало", "expectedObjectIds": ["tulips"] },
-  { "input": "Уютный вечер с настольной лампой", "expectedObjectIds": ["lamp"] },
-  { "input": "Прозрачная экономика и баланс", "expectedObjectIds": ["coin"] },
-  { "input": "книжка с опечаткой кнга", "expectedObjectIds": ["book"] },
-  { "input": "наушники сломались", "expectedObjectIds": ["headphones"] },
-  { "input": "случайный бессмысленный набор слов xyz123", "expectedObjectIds": [] }
+  {
+    "input": "Защита личных данных",
+    "expectedObjectIds": [
+      "phone",
+      "folder"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Идея, которая зажигает",
+    "expectedObjectIds": [
+      "lamp"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Финансовая грамотность",
+    "expectedObjectIds": [
+      "wallet",
+      "coin"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Озарение среди ночи",
+    "expectedObjectIds": [
+      "lamp"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Решение сложной задачи",
+    "expectedObjectIds": [
+      "puzzle"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Часть большого целого",
+    "expectedObjectIds": [
+      "puzzle"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Инвестиции и сбережения",
+    "expectedObjectIds": [
+      "coin"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Накопить на мечту",
+    "expectedObjectIds": [
+      "coin",
+      "wallet"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Бюджет на покупки",
+    "expectedObjectIds": [
+      "wallet"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Контроль расходов семьи",
+    "expectedObjectIds": [
+      "wallet"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Музыка для концентрации",
+    "expectedObjectIds": [
+      "headphones"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Подкаст в дороге",
+    "expectedObjectIds": [
+      "headphones"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Фокус и тишина",
+    "expectedObjectIds": [
+      "headphones"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Знания и обучение",
+    "expectedObjectIds": [
+      "book"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "История на страницах",
+    "expectedObjectIds": [
+      "book"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Дневник воспоминаний",
+    "expectedObjectIds": [
+      "book"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Мобильное приложение для связи",
+    "expectedObjectIds": [
+      "phone"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Звонок другу",
+    "expectedObjectIds": [
+      "phone"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Уведомление в мессенджере",
+    "expectedObjectIds": [
+      "phone"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Организация документов проекта",
+    "expectedObjectIds": [
+      "folder"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Архив отчетов компании",
+    "expectedObjectIds": [
+      "folder"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Подпись договора",
+    "expectedObjectIds": [
+      "pen"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Письмо от руки",
+    "expectedObjectIds": [
+      "pen"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Творческое вдохновение для текста",
+    "expectedObjectIds": [
+      "pen"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Весенний подарок к празднику",
+    "expectedObjectIds": [
+      "tulips"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Забота и нежность",
+    "expectedObjectIds": [
+      "tulips"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Рост и новое начало",
+    "expectedObjectIds": [
+      "tulips"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Уютный вечер с настольной лампой",
+    "expectedObjectIds": [
+      "lamp"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Прозрачная экономика и баланс",
+    "expectedObjectIds": [
+      "coin"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "книжка с опечаткой кнга",
+    "expectedObjectIds": [
+      "book"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "наушники сломались",
+    "expectedObjectIds": [
+      "headphones"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "случайный бессмысленный набор слов xyz123",
+    "expectedObjectIds": [],
+    "minObjects": 4
+  },
+  {
+    "input": "Безопасность",
+    "expectedObjectIds": [
+      "phone",
+      "folder"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Конфиденциальность",
+    "expectedObjectIds": [
+      "folder"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Надёжный пароль",
+    "expectedObjectIds": [
+      "phone"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Защита паролей",
+    "expectedObjectIds": [
+      "phone"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Инсайт",
+    "expectedObjectIds": [
+      "lamp"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Финансы",
+    "expectedObjectIds": [
+      "coin",
+      "wallet"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Накопления",
+    "expectedObjectIds": [
+      "coin",
+      "wallet"
+    ],
+    "minObjects": 4
+  },
+  {
+    "input": "Финансовая безопасность",
+    "expectedObjectIds": [
+      "coin",
+      "wallet"
+    ],
+    "minObjects": 4
+  }
 ]

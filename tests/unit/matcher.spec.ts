@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { matchComponents, matchMetaphor } from '@/core/matcher'
+import { ensureMinimumObjects, matchComponents, matchMetaphor } from '@/core/matcher'
 
 describe('matchMetaphor edge cases', () => {
   it('empty input does not throw and returns a non-confident neutral result', () => {
@@ -90,5 +90,20 @@ describe('matchComponents', () => {
     const result = matchComponents('книга, книга')
     const bookMatches = result.matches.filter((match) => match.objectId === 'book')
     expect(bookMatches).toHaveLength(1)
+  })
+})
+
+describe('ensureMinimumObjects', () => {
+  it('pads a single match up to four distinct objects', () => {
+    const padded = ensureMinimumObjects([{ objectId: 'phone', score: 0.6, reasons: ['Телефон'] }])
+    expect(padded).toHaveLength(4)
+    expect(new Set(padded.map((match) => match.objectId)).size).toBe(4)
+    expect(padded[0]?.objectId).toBe('phone')
+  })
+
+  it('keeps matches untouched when there are already enough', () => {
+    const matches = matchMetaphor('Финансовая грамотность').matches
+    const input = [...matches, ...ensureMinimumObjects([]), ...matches].slice(0, 4)
+    expect(ensureMinimumObjects(input)).toBe(input)
   })
 })

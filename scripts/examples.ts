@@ -2,9 +2,10 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { JSDOM } from 'jsdom'
 import { Resvg } from '@resvg/resvg-js'
-import { selectComposedObjects } from '../src/core/compose/select-composed-objects'
+import { selectComposedObjects, type ComposedObject } from '../src/core/compose/select-composed-objects'
 import { layoutScene, type LayoutItemInput } from '../src/core/layout/layout'
-import { matchComponents, matchMetaphor } from '../src/core/matcher/matcher'
+import { composeMetaphor } from '../src/core/compose/compose-metaphor'
+import { matchComponents } from '../src/core/matcher/matcher'
 import {
   exportSceneToSvg,
   type ExportAssetSource,
@@ -144,15 +145,14 @@ function buildAssetSource(
   }
 }
 
-function rankedObjectIds(example: ExampleSeed): string[] {
-  if (example.scenario === 'metaphor') {
-    return matchMetaphor(example.input).matches.map((match) => match.objectId)
-  }
-  return matchComponents(example.input, manifest).matches.map((match) => match.objectId)
+function composedObjects(example: ExampleSeed): ComposedObject[] {
+  if (example.scenario === 'metaphor') return composeMetaphor(example.input).composed
+  const ids = matchComponents(example.input, manifest).matches.map((match) => match.objectId)
+  return selectComposedObjects(ids)
 }
 
 function buildScene(library: LoadedLibrary, example: ExampleSeed): Scene {
-  const composed = selectComposedObjects(rankedObjectIds(example))
+  const composed = composedObjects(example)
 
   const items: LayoutItemInput[] = composed.flatMap((object) => {
     const bbox = library.objectBBoxes.get(`${object.objectId}-${example.size}-${object.state}`)
@@ -236,7 +236,9 @@ function main(): void {
     writeFileSync(join(OUTPUT_DIR, `${example.id}.svg`), svg, 'utf8')
     writeFileSync(join(OUTPUT_DIR, `${example.id}.png`), png)
 
-    const objectIds = scene.items.map((item) => item.objectId)
+    const objectIds = scene.items.map((item) =>
+      item.state === 'bg' ? `${item.objectId} (фон)` : item.objectId,
+    )
     rows.push({ example, objectIds })
     console.log(
       `examples: «${example.input}» (${SCENARIO_LABEL[example.scenario]}) → ${objectIds.join(', ')} → ${example.id}.svg/.png`,

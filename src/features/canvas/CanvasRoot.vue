@@ -8,7 +8,9 @@ import {
   itemWorldCorners,
   rectsIntersect,
   type Rect,
+  scaledBBox,
 } from '@/features/canvas/geometry'
+import { useEffectiveObjectScale } from '@/features/canvas/object-scale'
 import SelectionOverlay from '@/features/canvas/SelectionOverlay.vue'
 import { applyPaletteToElement } from '@/core/recolor/recolor'
 import { clampCanvasSide, resolveFormat } from '@/shared/formats'
@@ -64,9 +66,15 @@ watch(
   { immediate: true },
 )
 
-function getBbox(item: SceneItem): Rect {
+const objectScale = useEffectiveObjectScale()
+
+function getRawBbox(item: SceneItem): Rect {
   const assetRef = libraryStore.getObjectRef(item.objectId, sceneStore.scene.size, item.state)
   return assetRef?.bbox ?? EMPTY_BBOX
+}
+
+function getBbox(item: SceneItem): Rect {
+  return scaledBBox(getRawBbox(item), objectScale.value)
 }
 
 function symbolIdFor(item: SceneItem): string {
@@ -529,7 +537,8 @@ function onKeyUp(event: KeyboardEvent): void {
           :key="item.uid"
           :item="item"
           :symbol-id="symbolIdFor(item)"
-          :bbox="getBbox(item)"
+          :bbox="getRawBbox(item)"
+          :object-scale="objectScale"
           :selected="sceneStore.selection.has(item.uid)"
           :override="liveOverride.get(item.uid)"
           @pointerdown="onItemPointerDown"
