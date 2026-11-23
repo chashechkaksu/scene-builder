@@ -4,7 +4,7 @@
 
 | Файл | Сценарий | Ввод | Формат | Размер | Палитра | Seed | Объекты |
 |---|---|---|---|---|---|---|---|
-| `example-1-privacy.svg` / `.png` | по метафоре | «Защита личных данных» | square | L | Фиолетовая | 9 | book (фон), lamp (фон), folder, phone |
+| `example-1-privacy.svg` / `.png` | по метафоре | «Защита личных данных» | square | L | Фиолетовая | 20 | book (фон), lamp (фон), folder, phone |
 | `example-2-finance-components.svg` / `.png` | по компонентам | «кошелёк, монета, папка, тюльпаны» | landscape | L | Оранжевая | 8 | tulips (фон), folder, wallet, coin |
 | `example-3-idea.svg` / `.png` | по метафоре | «Идея, которая зажигает» | portrait | S | Бирюзовая | 10 | book (фон), folder (фон), lamp, pen |
 

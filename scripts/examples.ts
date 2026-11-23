@@ -59,7 +59,7 @@ export const EXAMPLE_SEEDS: ExampleSeed[] = [
     format: 'square',
     size: 'L',
     paletteId: 'purple',
-    seed: 9,
+    seed: 20,
   },
   {
     id: 'example-2-finance-components',

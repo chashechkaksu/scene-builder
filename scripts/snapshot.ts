@@ -22,7 +22,7 @@ globalThis.Node = dom.window.Node as unknown as typeof Node
 
 const ROOT = process.cwd()
 const LIBRARY_DIR = join(ROOT, 'src/library')
-const OUTPUT_DIR = join(ROOT, 'docs/examples/snapshots')
+const OUTPUT_DIR = join(ROOT, 'docs/_preview/snapshots')
 
 const manifest = manifestJson as unknown as LibraryManifest
 
