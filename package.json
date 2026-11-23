@@ -16,6 +16,7 @@
     "e2e": "playwright test",
     "snapshot": "tsx scripts/snapshot.ts",
     "examples": "tsx scripts/examples.ts",
+    "examples:preview": "tsx scripts/examples-preview.ts",
     "verify": "npm run library && npm run typecheck && npm run lint && npm run test && npm run build && npm run e2e"
   },
   "dependencies": {

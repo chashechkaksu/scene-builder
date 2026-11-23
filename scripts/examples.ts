@@ -1,9 +1,13 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { JSDOM } from 'jsdom'
 import { Resvg } from '@resvg/resvg-js'
-import { selectComposedObjects, type ComposedObject } from '../src/core/compose/select-composed-objects'
-import { layoutScene, type LayoutItemInput } from '../src/core/layout/layout'
+import {
+  selectComposedObjects,
+  type ComposedObject,
+} from '../src/core/compose/select-composed-objects'
+import { diagnoseLayout, layoutScene, type LayoutItemInput } from '../src/core/layout/layout'
 import { composeMetaphor } from '../src/core/compose/compose-metaphor'
 import { matchComponents } from '../src/core/matcher/matcher'
 import {
@@ -29,15 +33,15 @@ const OUTPUT_DIR = join(ROOT, 'docs/examples')
 
 const manifest = manifestJson as unknown as LibraryManifest
 
-const PALETTES: Record<string, Palette> = {
+export const PALETTES: Record<string, Palette> = {
   purple: parsePalette(purpleJson),
   orange: parsePalette(orangeJson),
   teal: parsePalette(tealJson),
 }
 
-type ExampleScenario = 'metaphor' | 'components'
+export type ExampleScenario = 'metaphor' | 'components'
 
-interface ExampleSeed {
+export interface ExampleSeed {
   id: string
   scenario: ExampleScenario
   input: string
@@ -47,7 +51,7 @@ interface ExampleSeed {
   seed: number
 }
 
-const EXAMPLE_SEEDS: ExampleSeed[] = [
+export const EXAMPLE_SEEDS: ExampleSeed[] = [
   {
     id: 'example-1-privacy',
     scenario: 'metaphor',
@@ -55,7 +59,7 @@ const EXAMPLE_SEEDS: ExampleSeed[] = [
     format: 'square',
     size: 'L',
     paletteId: 'purple',
-    seed: 1,
+    seed: 9,
   },
   {
     id: 'example-2-finance-components',
@@ -64,7 +68,7 @@ const EXAMPLE_SEEDS: ExampleSeed[] = [
     format: 'landscape',
     size: 'L',
     paletteId: 'orange',
-    seed: 2,
+    seed: 8,
   },
   {
     id: 'example-3-idea',
@@ -73,11 +77,11 @@ const EXAMPLE_SEEDS: ExampleSeed[] = [
     format: 'portrait',
     size: 'S',
     paletteId: 'teal',
-    seed: 3,
+    seed: 10,
   },
 ]
 
-function libraryFilePath(file: string): string {
+export function libraryFilePath(file: string): string {
   return resolve(LIBRARY_DIR, file)
 }
 
@@ -100,7 +104,7 @@ function loadSymbol(file: string): SymbolMarkup {
   return parseSymbolMarkup(raw)
 }
 
-interface LoadedLibrary {
+export interface LoadedLibrary {
   objectSymbols: Map<string, SymbolMarkup>
   objectBBoxes: Map<string, { x: number; y: number; width: number; height: number }>
   backgroundSymbols: Map<string, SymbolMarkup>
@@ -108,7 +112,7 @@ interface LoadedLibrary {
 
 const SIZES: Size[] = ['L', 'S']
 
-function loadLibrary(): LoadedLibrary {
+export function loadLibrary(): LoadedLibrary {
   const objectSymbols = new Map<string, SymbolMarkup>()
   const objectBBoxes = new Map<string, { x: number; y: number; width: number; height: number }>()
   const backgroundSymbols = new Map<string, SymbolMarkup>()
@@ -131,7 +135,7 @@ function loadLibrary(): LoadedLibrary {
   return { objectSymbols, objectBBoxes, backgroundSymbols }
 }
 
-function buildAssetSource(
+export function buildAssetSource(
   library: LoadedLibrary,
   paletteId: string,
   size: Size,
@@ -151,7 +155,7 @@ function composedObjects(example: ExampleSeed): ComposedObject[] {
   return selectComposedObjects(ids)
 }
 
-function buildScene(library: LoadedLibrary, example: ExampleSeed): Scene {
+export function buildScene(library: LoadedLibrary, example: ExampleSeed): Scene {
   const composed = composedObjects(example)
 
   const items: LayoutItemInput[] = composed.flatMap((object) => {
@@ -165,12 +169,23 @@ function buildScene(library: LoadedLibrary, example: ExampleSeed): Scene {
     )
   }
 
-  const placements = layoutScene({
+  const layoutRequest = {
     items,
     format: example.format,
     size: example.size,
     seed: example.seed,
-  })
+  }
+  const placements = layoutScene(layoutRequest)
+  const report = diagnoseLayout(layoutRequest, placements)
+  console.log(
+    `  ${example.id}: group=${report.groupAreaRatio.toFixed(2)} gapBreaks=${report.mainGapBreaks} ` +
+      report.objects
+        .map(
+          (row) =>
+            `${row.objectId}/${row.state}=${row.visibleRatio.toFixed(2)}(>=${row.requiredVisibleRatio})`,
+        )
+        .join(' '),
+  )
 
   return {
     format: example.format,
@@ -188,7 +203,7 @@ function buildScene(library: LoadedLibrary, example: ExampleSeed): Scene {
   }
 }
 
-function renderPng(svgMarkup: string): Buffer {
+export function renderPng(svgMarkup: string): Buffer {
   const resvg = new Resvg(svgMarkup, { font: { loadSystemFonts: false } })
   return resvg.render().asPng()
 }
@@ -251,4 +266,6 @@ function main(): void {
   )
 }
 
-main()
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main()
+}

@@ -1,11 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import {
+  LAYOUT_BG_MIN_VISIBLE_RATIO,
+  LAYOUT_MAIN_MAX_COVER_OF_LARGE_RATIO,
   LAYOUT_MAIN_MAX_MAIN_OVERLAP_RATIO,
+  LAYOUT_SMALL_MAIN_MAX_GAP_RATIO,
+  LAYOUT_SMALL_MAIN_MAX_OVERLAP_RATIO,
+  LAYOUT_MAIN_COVERED_MIN_VISIBLE_RATIO,
   LAYOUT_MAIN_MIN_VISIBLE_RATIO,
   LAYOUT_MAX_OBJECT_FRAME_AREA_RATIO,
 } from '@/core/layout/constants'
 import {
   computeLayoutDensityScale,
+  diagnoseLayout,
+  smallMainViolations,
+  mainStackViolations,
+  requiredMainVisibility,
   exceedsFrameAreaLimit,
   layoutScene,
   visibleAreaRatio,
@@ -153,10 +162,11 @@ describe('core/layout property tests', () => {
     }
   })
 
-  it('flipX is always false (autolayout never mirrors objects)', () => {
+  it('flipX is always false and rotation always 0 (autolayout keeps the isometry)', () => {
     const items = makeItems(5)
     const result = layoutScene({ items, format: 'landscape', size: 'L', seed: 11 })
     for (const placement of result) {
+      expect(placement.rotation).toBe(0)
       expect(placement.flipX).toBe(false)
     }
   })
@@ -208,32 +218,148 @@ describe('readability thresholds', () => {
     expect(exceedsFrameAreaLimit(box(0, 0, side + 5, side + 5), frame)).toBe(true)
   })
 
-  it('main objects stay visible and do not heavily overlap each other (feasible sizes)', () => {
+  it('requiredMainVisibility is lower only for a main object covered by a later main one', () => {
+    const boxes = [box(0, 0, 100, 100), box(50, 50, 40, 40), box(500, 500, 40, 40)]
+    const states = ['main', 'main', 'main'] as ObjectState[]
+    expect(requiredMainVisibility(0, boxes, states)).toBe(LAYOUT_MAIN_COVERED_MIN_VISIBLE_RATIO)
+    expect(requiredMainVisibility(1, boxes, states)).toBe(LAYOUT_MAIN_MIN_VISIBLE_RATIO)
+    expect(requiredMainVisibility(2, boxes, states)).toBe(LAYOUT_MAIN_MIN_VISIBLE_RATIO)
+  })
+
+  it('mainStackViolations limits stack depth to 2 and the cover of a large object', () => {
+    const states = ['main', 'main', 'main'] as ObjectState[]
+    const big = box(0, 0, 100, 100)
+    expect(mainStackViolations([big, box(70, 70, 40, 40), box(500, 500, 40, 40)], states)).toBe(0)
+    expect(
+      mainStackViolations([big, box(10, 10, 40, 40), box(30, 30, 20, 20)], states),
+    ).toBeGreaterThan(0)
+    expect(
+      mainStackViolations([box(0, 0, 100, 100), box(50, 0, 100, 100), box(25, 50, 40, 40)], states),
+    ).toBeGreaterThan(0)
+    const coverShare = (40 * 40) / (100 * 100)
+    expect(coverShare).toBeLessThanOrEqual(LAYOUT_MAIN_MAX_COVER_OF_LARGE_RATIO)
+    expect(mainStackViolations([big, box(20, 20, 80, 80)], ['main', 'main'])).toBeGreaterThan(0)
+  })
+
+  it('small main objects stay fully visible and large covered ones stay above the covered limit', () => {
     for (const format of FORMATS) {
       for (const seed of SEEDS) {
-        for (const count of COUNTS.filter((value) => value <= 5)) {
-          const items = makeItems(count).map((item) => ({ ...item, state: 'main' as ObjectState }))
-          const result = layoutScene({ items, format, size: 'L', seed })
-          const formatDef = getFormat(format)
-          const canvasRect = { x: 0, y: 0, width: formatDef.width, height: formatDef.height }
-          const boxes = result.map((placement) => {
-            const input = items.find((item) => item.objectId === placement.objectId)
-            return placementWorldBBox(placement, input?.bbox ?? { width: 0, height: 0 })
-          })
-          boxes.forEach((worldBox, index) => {
-            const later = boxes.slice(index + 1)
-            const visible = visibleAreaRatio(worldBox, later, canvasRect)
-            expect(visible).toBeGreaterThanOrEqual(LAYOUT_MAIN_MIN_VISIBLE_RATIO - 0.15)
-            const overlap = boxes
-              .filter((_, other) => other !== index)
-              .reduce((sum, other) => sum + overlapArea(worldBox, other), 0)
-            expect(overlap / (worldBox.width * worldBox.height)).toBeLessThanOrEqual(
-              LAYOUT_MAIN_MAX_MAIN_OVERLAP_RATIO + 0.15,
-            )
-          })
+        const items: LayoutItemInput[] = [
+          { objectId: 'big', state: 'main', bbox: { x: 0, y: 0, width: 420, height: 300 } },
+          { objectId: 'small', state: 'main', bbox: { x: 0, y: 0, width: 140, height: 100 } },
+          { objectId: 'mid', state: 'main', bbox: { x: 0, y: 0, width: 220, height: 160 } },
+          { objectId: 'bgA', state: 'bg', bbox: { x: 0, y: 0, width: 500, height: 350 } },
+        ]
+        const request = { items, format, size: 'L' as const, seed }
+        const placements = layoutScene(request)
+        const report = diagnoseLayout(request, placements)
+        for (const row of report.objects.filter((object) => object.state === 'main')) {
+          expect(row.visibleRatio).toBeGreaterThanOrEqual(row.requiredVisibleRatio)
         }
+        expect(report.mainStackViolations).toBe(0)
       }
     }
+  })
+
+  it('layouts respect stack depth and background visibility rules (feasible sizes)', () => {
+    for (const format of FORMATS) {
+      for (const seed of SEEDS) {
+        const items: LayoutItemInput[] = [
+          { objectId: 'big', state: 'main', bbox: { x: 0, y: 0, width: 420, height: 300 } },
+          { objectId: 'small', state: 'main', bbox: { x: 0, y: 0, width: 140, height: 100 } },
+          { objectId: 'mid', state: 'main', bbox: { x: 0, y: 0, width: 220, height: 160 } },
+          { objectId: 'bgA', state: 'bg', bbox: { x: 0, y: 0, width: 500, height: 350 } },
+          { objectId: 'bgB', state: 'bg', bbox: { x: 0, y: 0, width: 400, height: 300 } },
+        ]
+        const request = { items, format, size: 'L' as const, seed }
+        const placements = layoutScene(request)
+        const report = diagnoseLayout(request, placements)
+        for (const row of report.objects.filter((object) => object.state === 'bg')) {
+          expect(row.visibleRatio).toBeGreaterThanOrEqual(LAYOUT_BG_MIN_VISIBLE_RATIO)
+        }
+        expect(report.mainStackViolations).toBe(0)
+      }
+    }
+  })
+
+  it('smallMainViolations requires a small main object to hug the nearest larger one', () => {
+    const states = ['main', 'main'] as ObjectState[]
+    const maxGap = 1000 * LAYOUT_SMALL_MAIN_MAX_GAP_RATIO
+    const big = box(0, 0, 400, 300)
+    expect(smallMainViolations([big, box(400 + maxGap - 5, 100, 80, 60)], states, frame)).toBe(0)
+    expect(smallMainViolations([big, box(400 + maxGap + 60, 100, 80, 60)], states, frame)).toBe(1)
+    expect(smallMainViolations([big, box(340, 100, 80, 60)], states, frame)).toBeGreaterThan(0)
+    expect(smallMainViolations([big, box(380, 100, 80, 60)], states, frame)).toBe(0)
+    const overlapShare = (20 * 60) / (80 * 60)
+    expect(overlapShare).toBeLessThanOrEqual(LAYOUT_SMALL_MAIN_MAX_OVERLAP_RATIO + 0.05)
+  })
+
+  it('main objects of similar size are not forced together', () => {
+    const states = ['main', 'main'] as ObjectState[]
+    expect(smallMainViolations([box(0, 0, 400, 300), box(600, 0, 380, 290)], states, frame)).toBe(0)
+  })
+
+  it('small main objects stand next to a larger main object in finished layouts', () => {
+    for (const format of FORMATS) {
+      for (const seed of SEEDS) {
+        const items: LayoutItemInput[] = [
+          { objectId: 'big', state: 'main', bbox: { x: 0, y: 0, width: 420, height: 300 } },
+          { objectId: 'coin', state: 'main', bbox: { x: 0, y: 0, width: 90, height: 60 } },
+          { objectId: 'bgA', state: 'bg', bbox: { x: 0, y: 0, width: 500, height: 350 } },
+        ]
+        const request = { items, format, size: 'L' as const, seed }
+        const placements = layoutScene(request)
+        const report = diagnoseLayout(request, placements)
+        expect(report.mainStackViolations).toBe(0)
+        const big = placements.find((placement) => placement.objectId === 'big')
+        const coin = placements.find((placement) => placement.objectId === 'coin')
+        const frameDef = getFormat(format)
+        const maxCentreDistance = 210 + 45 + Math.min(frameDef.width, frameDef.height) * 0.08 + 150
+        expect(
+          Math.hypot((big?.x ?? 0) - (coin?.x ?? 0), (big?.y ?? 0) - (coin?.y ?? 0)),
+        ).toBeLessThan(maxCentreDistance)
+      }
+    }
+  })
+
+  it('spreads objects across the frame zones in landscape (every third is occupied)', () => {
+    for (const seed of SEEDS) {
+      const items = makeItems(4)
+      const result = layoutScene({ items, format: 'landscape', size: 'L', seed })
+      const width = getFormat('landscape').width
+      const occupied = new Set(
+        result.map((placement) => Math.min(2, Math.floor((placement.x / width) * 3))),
+      )
+      expect(occupied.size).toBe(3)
+    }
+  })
+
+  it('main/main overlap stays within the limit for similar-sized objects', () => {
+    for (const format of FORMATS) {
+      for (const seed of SEEDS) {
+        const items: LayoutItemInput[] = [
+          { objectId: 'a', state: 'main', bbox: { x: 0, y: 0, width: 300, height: 220 } },
+          { objectId: 'b', state: 'main', bbox: { x: 0, y: 0, width: 280, height: 210 } },
+        ]
+        const request = { items, format, size: 'L' as const, seed }
+        const placements = layoutScene(request)
+        const [first, second] = placements
+        if (!first || !second) throw new Error('unreachable')
+        const boxA = placementWorldBBox(first, { width: 300, height: 220 })
+        const boxB = placementWorldBBox(second, { width: 280, height: 210 })
+        const overlap = overlapArea(boxA, boxB) / Math.min(300 * 220, 280 * 210)
+        expect(overlap).toBeLessThanOrEqual(LAYOUT_MAIN_MAX_MAIN_OVERLAP_RATIO + 0.001)
+      }
+    }
+  })
+
+  it('orders main objects from the largest to the smallest so a small one lies on top', () => {
+    const items: LayoutItemInput[] = [
+      { objectId: 'small', state: 'main', bbox: { x: 0, y: 0, width: 100, height: 80 } },
+      { objectId: 'big', state: 'main', bbox: { x: 0, y: 0, width: 400, height: 300 } },
+    ]
+    const result = layoutScene({ items, format: 'landscape', size: 'L', seed: 4 })
+    expect(result.map((placement) => placement.objectId)).toEqual(['big', 'small'])
   })
 })
 
